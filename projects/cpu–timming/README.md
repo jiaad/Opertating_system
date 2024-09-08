@@ -1,7 +1,7 @@
-# Profiling 
+# Profiling
 
 ## Usage
-    - `make run`
+    - make run
 
 ## TODO
     - Make it reusable for other projects
