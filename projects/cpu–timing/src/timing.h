@@ -12,9 +12,9 @@ static inline int cpuid() {
 #elif __linux
 #define _GNU_SOURCE
 #include <sched.h>
-int cpuid() { return sched_getcpu(); }
+static inline int cpuid() { return sched_getcpu(); }
 #else
-int cpuid() { return -1; }
+static inline int cpuid() { return -1; }
 #endif
 
 struct profile_times {
@@ -29,5 +29,5 @@ void profile_log(struct profile_times *t);
 
 void extra_profile_log();
 
-static inline int cpuid();
+inline int cpuid();
 #endif
