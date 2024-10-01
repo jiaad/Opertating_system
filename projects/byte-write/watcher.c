@@ -6,14 +6,19 @@
 #include <sys/event.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 int main() {
   struct kevent event;
   struct kevent tevent;
+  struct stat currBuf;
   int fd, kq, ret;
+  long long int prevSize;
 
   fd = open("test.txt", O_RDONLY);
+  fstat(fd, &currBuf);
+  prevSize = currBuf.st_size;
   printf("fd is: %d\n",fd);
   if (fd == -1) {
     err(EXIT_FAILURE, "Bad file descriptor %d", fd);
@@ -40,7 +45,11 @@ int main() {
       if (tevent.flags & EV_ERROR) {
         errx(EXIT_FAILURE, "Event error: %s", strerror(event.data));
       } else {
-        printf("Something was written in test.txt\n");
+        printf("before size: %lld - Blocks: %lld - Disk: %lld\n", prevSize, currBuf.st_blocks, currBuf.st_blocks * 512);
+        fstat(fd, &currBuf);
+
+        printf("now    size: %lld - Blocks: %lld - Disk: %lld\n\n\n", currBuf.st_size, currBuf.st_blocks, currBuf.st_blocks * 512);
+        prevSize = currBuf.st_size;
       }
     }
   }
