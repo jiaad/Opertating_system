@@ -52,6 +52,7 @@ pid_t Fork(){
 	return p;
 
 }
+
 int main(int argc, char *argv[], char *envp[]){
 	char *splitted[100];
 	int i;
