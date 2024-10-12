@@ -1,9 +1,7 @@
-#include <curses.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
-#include <term.h>
 #include <unistd.h>
 // struct sigaction {
 //   union __sigaction_u __sigaction_u; /* signal handler */
@@ -30,22 +28,62 @@ void handler(int a, siginfo_t *siginfo, void *context) {
   resized = 1;
 }
 
+void new_line(int n) {
+  int i;
+  for (i = 0; i < n; i++) {
+    write(1, "\n", 1);
+  }
+}
+
+void print_char(int x, char *c) {
+  int j;
+  for (j = 0; j < x; j++) {
+    write(1, c, 1);
+  }
+}
+
+void print_line(int n) { int i; }
+void print_box() {
+  struct winsize ws;
+  int i, j;
+  int x, y;
+  ioctl(0, TIOCGWINSZ, &ws);
+  x = ws.ws_col / 3;
+  y = ws.ws_row / 3;
+
+  new_line(y);
+  print_char(x, " ");
+  print_char(1, ".");
+  print_char(x, "-");
+  print_char(1, ".");
+  write(1, "\n", 1);
+  for (i = 0; i < y; i++) {
+    print_char(x, " ");
+    write(1, "|", 1);
+    print_char(x, " ");
+    write(1, "|", 1);
+    write(1, "\n", 1);
+  }
+  print_char(x, " ");
+  print_char(1, "'");
+  print_char(x, "-");
+  print_char(1, "'");
+  write(1, "\n", 1);
+  new_line(y);
+}
 int main(void) {
   int a = 0;
+  int first = 0;
   sigset_t old;
   struct sigaction act = {0};
   struct sigaction oact;
   act.sa_sigaction = &handler;
   sigaction(SIGWINCH, &act, &oact);
-  int ret = setupterm(NULL, STDOUT_FILENO, NULL);
   int i = 0;
-  struct winsize ws;
+  print_box();
   while (1) {
     if (resized == 1) {
-      ioctl(0, TIOCGWINSZ, &ws);
-      int width = tigetnum("cols");
-      int height = tigetnum("lines");
-      printf("FINISHED [%d] * [%d] , [%d]\n", ws.ws_col, ws.ws_row, i);
+      print_box();
       resized = 0;
     }
   };
