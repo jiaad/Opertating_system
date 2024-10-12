@@ -61,13 +61,10 @@ int main(int argc, char *argv[], char *envp[]) {
     char *str = parseline();
     pid = Fork();
     if (pid == 0) {
-      char *splitted[4];
+      char *splitted[100];
       cs_split(str, splitted);
       char *n_argv[4];
       printf("chlidren exec [%d]\n", getpid());
-      for (int i = 0; i < 4; i++) {
-        printf("----> [%s]\n", splitted[i]);
-      }
       execve(splitted[0], splitted, envp);
       perror("echo test:"); /* execve() returns only on error */
       exit(EXIT_FAILURE);
